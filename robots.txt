@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dusmamud.github.io/pdf-tools/sitemap-index.xml
