@@ -1,0 +1,109 @@
+---
+import { Icon } from 'astro-icon/components';
+import { locales } from '../../astro.config.mjs';
+import { toolUrl, homeUrl } from '../i18n/urls';
+import type { Dict } from '../i18n';
+
+interface Props { locale: string; dict: Dict; }
+const { locale, dict } = Astro.props;
+const t = dict.nav;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pathRest = Astro.url.pathname.replace(/^\/pdf-tools(\/[a-z]{2})?/, '') || '/';
+const localeHref = (l: string) => `${basePath}${l === 'en' ? '' : '/' + l}${pathRest}`;
+---
+
+<header class="fixed top-0 inset-x-0 z-50 border-b" style="background: var(--bg); border-color: var(--border); height: 60px;">
+  <div class="max-w-7xl mx-auto px-4 h-full flex items-center gap-6">
+    <a href={homeUrl(locale)} class="flex items-center gap-2 shrink-0" aria-label="PDF Tools home">
+      <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white" style="background: var(--primary);">
+        <Icon name="ph:file-pdf" class="w-5 h-5" />
+      </span>
+      <span class="flex flex-col leading-none">
+        <span class="font-bold text-lg tracking-tight">PDF Tools</span>
+        <span class="text-[10px] font-medium" style="color: var(--text-3);">{t.byDusrel}</span>
+      </span>
+    </a>
+    <nav class="hidden md:flex items-center gap-5 text-[13px] font-semibold uppercase tracking-wide" aria-label="Primary">
+      <a href={toolUrl(locale, 'merge-pdf')} class="hover:opacity-70">{t.merge}</a>
+      <a href={toolUrl(locale, 'split-pdf')} class="hover:opacity-70">{t.split}</a>
+      <a href={toolUrl(locale, 'compress-pdf')} class="hover:opacity-70">{t.compress}</a>
+      <a href={homeUrl(locale) + '#tools'} class="hover:opacity-70">{t.allTools}</a>
+    </nav>
+    <div class="ms-auto flex items-center gap-2">
+      <button
+        data-theme-cycle
+        class="w-9 h-9 rounded-full border flex items-center justify-center hover:opacity-70"
+        style="border-color: var(--border);"
+        aria-label="Toggle theme"
+        title="Light / Dark / System"
+      >
+        <Icon name="ph:moon" class="w-4 h-4 block dark:hidden" />
+        <Icon name="ph:sun" class="w-4 h-4 hidden dark:block" />
+      </button>
+      <div class="relative">
+        <button
+          id="locale-btn"
+          class="h-9 px-3 rounded-full border flex items-center gap-1.5 text-sm font-medium hover:opacity-70"
+          style="border-color: var(--border);"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+        >
+          <Icon name="ph:globe" class="w-4 h-4" />
+          <span>{locale.toUpperCase()}</span>
+        </button>
+        <div id="locale-menu" class="hidden absolute end-0 mt-2 w-44 rounded-xl border shadow-lg p-1 max-h-72 overflow-auto" style="background: var(--surface); border-color: var(--border);" role="listbox" aria-label={t.language}>
+          {locales.map((l) => (
+            <a
+              role="option"
+              aria-selected={l === locale}
+              href={localeHref(l)}
+              class="block px-3 py-2 rounded-lg text-sm hover:opacity-70"
+              style={l === locale ? 'background: var(--bg-soft); font-weight: 600;' : ''}
+            >
+              {l.toUpperCase()}
+            </a>
+          ))}
+        </div>
+      </div>
+      <button id="menu-btn" class="md:hidden w-9 h-9 rounded-full border flex items-center justify-center" style="border-color: var(--border);" aria-label={t.menu} aria-expanded="false">
+        <Icon name="ph:list" class="w-4 h-4" />
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden md:hidden border-t" style="background: var(--bg); border-color: var(--border);">
+    <nav class="px-4 py-3 flex flex-col gap-1 text-sm font-semibold uppercase" aria-label="Mobile">
+      <a href={toolUrl(locale, 'merge-pdf')} class="py-2">{t.merge}</a>
+      <a href={toolUrl(locale, 'split-pdf')} class="py-2">{t.split}</a>
+      <a href={toolUrl(locale, 'compress-pdf')} class="py-2">{t.compress}</a>
+      <a href={homeUrl(locale) + '#tools'} class="py-2">{t.allTools}</a>
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  (function () {
+    var lb = document.getElementById('locale-btn');
+    var lm = document.getElementById('locale-menu');
+    if (lb && lm) {
+      lb.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = lm.classList.toggle('hidden');
+        lb.setAttribute('aria-expanded', String(!open));
+      });
+      document.addEventListener('click', function () {
+        lm.classList.add('hidden');
+        lb.setAttribute('aria-expanded', 'false');
+      });
+    }
+    var mb = document.getElementById('menu-btn');
+    var mm = document.getElementById('mobile-menu');
+    if (mb && mm) {
+      mb.addEventListener('click', function () {
+        var open = mm.classList.toggle('hidden');
+        mb.setAttribute('aria-expanded', String(!open));
+      });
+    }
+  })();
+</script>
+
+<div style="height: 60px;" aria-hidden="true"></div>

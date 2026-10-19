@@ -1,0 +1,37 @@
+---
+import { Icon } from 'astro-icon/components';
+import { toolUrl } from '../i18n/urls';
+import { toolByKey } from '../tools';
+import type { Dict } from '../i18n';
+
+interface Props { locale: string; toolKey: string; dict: Dict; }
+const { locale, toolKey, dict } = Astro.props;
+const tool = toolByKey[toolKey];
+const meta = dict.tools[toolKey as keyof typeof dict.tools];
+
+const tint: Record<string, string> = {
+  organize: 'background: #ffe9e4; color: #d63d2a;',
+  optimize: 'background: #e2f5e9; color: #1d7a3d;',
+  convert: 'background: #e3f0ff; color: #2f6bd8;',
+  edit: 'background: #f0e8fb; color: #7a3fd1;',
+  security: 'background: #e8edf3; color: #3d5a76;',
+};
+---
+
+<a
+  href={toolUrl(locale, tool.slug)}
+  class="tool-card group rounded-xl border p-6 flex flex-col gap-3 transition-shadow hover:shadow-md"
+  style="background: var(--surface); border-color: var(--border);"
+>
+  <span class="w-12 h-12 rounded-lg flex items-center justify-center" style={tint[tool.category]}>
+    <Icon name={`ph:${tool.icon.replace('ph-', '')}`} class="w-6 h-6" />
+  </span>
+  <span class="font-semibold text-[17px]">{meta.name}</span>
+  <span class="text-sm leading-relaxed" style="color: var(--text-2);">{meta.desc}</span>
+</a>
+
+<style>
+  .tool-card:hover {
+    border-color: var(--text);
+  }
+</style>

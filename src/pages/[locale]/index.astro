@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import ToolGrid from '../../components/ToolGrid.astro';
+import { getDict } from '../../i18n/dicts';
+import { locales } from '../../../astro.config.mjs';
+import { homeJsonLd } from '../../lib/seo';
+
+export function getStaticPaths() {
+  return locales.filter((l) => l !== 'en').map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params;
+const dict = getDict(locale as string);
+const canonicalPath = `/${locale}/`;
+---
+
+<BaseLayout
+  locale={locale as string}
+  dict={dict}
+  title={dict.meta.homeTitle}
+  description={dict.meta.homeDesc}
+  canonicalPath={canonicalPath}
+  jsonLd={homeJsonLd(`https://dusmamud.github.io/pdf-tools${canonicalPath}`)}
+>
+  <Hero dict={dict} />
+  <ToolGrid locale={locale as string} dict={dict} />
+  <section id="privacy" class="max-w-3xl mx-auto px-4 py-14 text-center">
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight">{dict.trust.title}</h2>
+    <p class="mt-3 text-lg" style="color: var(--text-2);">{dict.trust.sub}</p>
+    <div class="mt-6 flex flex-wrap justify-center gap-2">
+      {dict.trust.badges.map((b) => (
+        <span class="px-4 py-2 rounded-full text-sm font-medium border" style="background: var(--bg-soft); border-color: var(--border);">{b}</span>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

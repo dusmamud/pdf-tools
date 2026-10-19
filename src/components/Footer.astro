@@ -1,0 +1,48 @@
+---
+import type { Dict } from '../i18n';
+import { homeUrl, toolUrl } from '../i18n/urls';
+import { tools } from '../tools';
+
+interface Props { locale: string; dict: Dict; }
+const { locale, dict } = Astro.props;
+const t = dict.footer;
+---
+
+<footer class="border-t mt-20" style="border-color: var(--border); background: var(--bg-soft);">
+  <div class="max-w-7xl mx-auto px-4 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+    <div>
+      <h2 class="font-semibold text-sm uppercase tracking-wide mb-4">{t.product}</h2>
+      <ul class="space-y-2.5 text-sm" style="color: var(--text-2);">
+        {tools.slice(0, 6).map((tool) => (
+          <li><a href={toolUrl(locale, tool.slug)} class="hover:opacity-70">{dict.tools[tool.key].name}</a></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h2 class="font-semibold text-sm uppercase tracking-wide mb-4">{t.resources}</h2>
+      <ul class="space-y-2.5 text-sm" style="color: var(--text-2);">
+        {tools.slice(6).map((tool) => (
+          <li><a href={toolUrl(locale, tool.slug)} class="hover:opacity-70">{dict.tools[tool.key].name}</a></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h2 class="font-semibold text-sm uppercase tracking-wide mb-4">{t.company}</h2>
+      <ul class="space-y-2.5 text-sm" style="color: var(--text-2);">
+        <li><a href={homeUrl(locale) + '#tools'} class="hover:opacity-70">{dict.nav.allTools}</a></li>
+        <li><a href={homeUrl(locale) + '#privacy'} class="hover:opacity-70">{t.privacy}</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="font-bold text-lg mb-2">PDF Tools</p>
+      <p class="text-sm" style="color: var(--text-2);">{t.tagline}</p>
+      <a href="https://dusrel.com" target="_blank" rel="noopener" class="mt-2 inline-block text-sm hover:opacity-70" style="color: var(--text-2);">{t.byDusrel}</a>
+    </div>
+  </div>
+  <div class="border-t" style="border-color: var(--border);">
+    <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm" style="color: var(--text-3);">
+      <p>{t.rights}</p>
+      <p>{dict.trust.badges.join(' · ')}</p>
+    </div>
+  </div>
+</footer>

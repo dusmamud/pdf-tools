@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getDict } from '../i18n/dicts';
+
+const locale = 'en';
+const dict = getDict(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  dict={dict}
+  title="Page not found | PDF Tools"
+  description="The page you are looking for does not exist."
+  canonicalPath="/404/"
+>
+  <section class="max-w-xl mx-auto px-4 py-24 text-center">
+    <h1 class="text-4xl font-bold tracking-tight">{dict.notFound.title}</h1>
+    <p class="mt-3 text-lg" style="color: var(--text-2);">{dict.notFound.sub}</p>
+    <a
+      href="/pdf-tools/"
+      class="inline-block mt-8 rounded-[10px] px-8 py-3.5 font-semibold text-white"
+      style="background: var(--primary);"
+    >
+      {dict.notFound.back}
+    </a>
+  </section>
+</BaseLayout>

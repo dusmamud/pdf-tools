@@ -1,0 +1,56 @@
+---
+import { categories, tools } from '../tools';
+import ToolCard from './ToolCard.astro';
+import type { Dict } from '../i18n';
+
+interface Props { locale: string; dict: Dict; }
+const { locale, dict } = Astro.props;
+---
+
+<section id="tools" class="max-w-7xl mx-auto px-4 pb-8">
+  <div class="flex flex-wrap gap-2 justify-center mb-8" role="tablist" aria-label="Tool categories">
+    {['all', ...categories].map((c, i) => (
+      <button
+        data-cat={c}
+        role="tab"
+        aria-selected={i === 0}
+        class="cat-pill px-4 py-2 rounded-full text-sm font-medium border transition-colors"
+        style={i === 0
+          ? 'background: var(--text); color: var(--bg); border-color: var(--text);'
+          : 'background: var(--bg-soft); border-color: var(--border); color: var(--text);'}
+      >
+        {c === 'all' ? dict.categories.all : dict.categories[c as keyof typeof dict.categories]}
+      </button>
+    ))}
+  </div>
+  <div id="tool-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+    {tools.map((tool) => (
+      <div data-tool-cat={tool.category}>
+        <ToolCard locale={locale} toolKey={tool.key} dict={dict} />
+      </div>
+    ))}
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    var pills = document.querySelectorAll('.cat-pill');
+    var cards = document.querySelectorAll('#tool-grid [data-tool-cat]');
+    pills.forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        var cat = pill.getAttribute('data-cat');
+        pills.forEach(function (p) {
+          var active = p === pill;
+          p.setAttribute('aria-selected', String(active));
+          p.style.background = active ? 'var(--text)' : 'var(--bg-soft)';
+          p.style.color = active ? 'var(--bg)' : 'var(--text)';
+          p.style.borderColor = active ? 'var(--text)' : 'var(--border)';
+        });
+        cards.forEach(function (card) {
+          var show = cat === 'all' || card.getAttribute('data-tool-cat') === cat;
+          card.style.display = show ? '' : 'none';
+        });
+      });
+    });
+  })();
+</script>

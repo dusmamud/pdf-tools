@@ -1,0 +1,104 @@
+---
+import { locales } from '../../astro.config.mjs';
+import { isRtl } from '../i18n';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  locale: string;
+  title: string;
+  description: string;
+  /** path without base, e.g. '/merge-pdf/' or '/hi/merge-pdf/' */
+  canonicalPath: string;
+  jsonLd?: Record<string, unknown>[];
+  dict: import('../i18n').Dict;
+  /** e.g. 'merge' -> /og/merge.png; defaults to og-default.png */
+  ogTool?: string;
+}
+
+const { locale, title, description, canonicalPath, jsonLd = [], dict, ogTool } = Astro.props;
+const site = 'https://dusmamud.github.io/pdf-tools';
+const canonical = `${site}${canonicalPath}`;
+const ogImage = `${site}/og/${ogTool ?? 'og-default'}.png`;
+---
+
+<!doctype html>
+<html lang={locale} dir={isRtl(locale) ? 'rtl' : 'ltr'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => (
+      <link
+        rel="alternate"
+        hreflang={l}
+        href={`${site}${l === 'en' ? canonicalPath : `/${l}${canonicalPath}`}`}
+      />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={`${site}${canonicalPath}`} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="PDF Tools" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
+    <link rel="preload" href={`${import.meta.env.BASE_URL}/fonts/inter-400.woff2`} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={`${import.meta.env.BASE_URL}/fonts/inter-700.woff2`} as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      // Theme init pre-paint: light | dark | system
+      (function () {
+        try {
+          var t = localStorage.getItem('pdf-tools-theme') || 'system';
+          var dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {}
+      })();
+    </script>
+    {jsonLd.map((schema) => (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
+  </head>
+  <body>
+    <Header locale={locale} dict={dict} />
+    <main>
+      <slot />
+    </main>
+    <Footer locale={locale} dict={dict} />
+    <script is:inline>
+      // Theme toggle + system listener (tiny, no framework)
+      (function () {
+        function apply(t) {
+          var dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+          try { localStorage.setItem('pdf-tools-theme', t); } catch (e) {}
+          document.querySelectorAll('[data-theme-label]').forEach(function (el) {
+            el.textContent = { light: 'Light', dark: 'Dark', system: 'System' }[t] || t;
+          });
+        }
+        document.addEventListener('click', function (e) {
+          var btn = e.target.closest('[data-theme-cycle]');
+          if (!btn) return;
+          var cur = 'system';
+          try { cur = localStorage.getItem('pdf-tools-theme') || 'system'; } catch (err) {}
+          var next = cur === 'light' ? 'dark' : cur === 'dark' ? 'system' : 'light';
+          apply(next);
+        });
+        try {
+          matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+            var t = 'system';
+            try { t = localStorage.getItem('pdf-tools-theme') || 'system'; } catch (e) {}
+            if (t === 'system') apply('system');
+          });
+        } catch (e) {}
+      })();
+    </script>
+  </body>
+</html>

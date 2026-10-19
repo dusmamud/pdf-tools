@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Dropzone from '../../tools/Dropzone';
+import MergeTool from '../../tools/MergeTool';
+import SplitTool from '../../tools/SplitTool';
+import CompressTool from '../../tools/CompressTool';
+import OrganizeTool from '../../tools/OrganizeTool';
+import { tools, toolBySlug } from '../../tools';
+import { getDict } from '../../i18n/dicts';
+import { locales } from '../../../astro.config.mjs';
+import { toolJsonLd } from '../../lib/seo';
+import { fmt } from '../../i18n';
+
+export function getStaticPaths() {
+  const nonEn = locales.filter((l) => l !== 'en');
+  return nonEn.flatMap((locale) => tools.map((t) => ({ params: { locale, tool: t.slug } })));
+}
+
+const { locale, tool: slug } = Astro.params;
+const tool = toolBySlug[slug as string];
+const dict = getDict(locale as string);
+const meta = dict.tools[tool.key as keyof typeof dict.tools];
+const canonicalPath = `/${locale}/${tool.slug}/`;
+const url = `https://dusmamud.github.io/pdf-tools${canonicalPath}`;
+const title = fmt(dict.meta.toolTitle, { tool: meta.name });
+---
+
+<BaseLayout
+  locale={locale as string}
+  dict={dict}
+  title={title}
+  description={meta.desc}
+  canonicalPath={canonicalPath}
+  jsonLd={toolJsonLd(locale as string, tool, meta.name, meta.desc, url)}
+  ogTool={tool.key}
+>
+  <section class="max-w-3xl mx-auto px-4 pt-12 pb-8 text-center">
+    <h1 class="text-4xl md:text-[40px] font-bold tracking-tight">{meta.h1}</h1>
+    <p class="mt-3 text-lg" style="color: var(--text-2);">{meta.sub}</p>
+  </section>
+  <section class="max-w-3xl mx-auto px-4 pb-16">
+    {tool.key === 'merge' ? (
+      <MergeTool client:visible locale={locale as string} dict={dict} />
+    ) : tool.key === 'split' ? (
+      <SplitTool client:visible locale={locale as string} dict={dict} />
+    ) : tool.key === 'compress' ? (
+      <CompressTool client:visible locale={locale as string} dict={dict} />
+    ) : tool.key === 'organize' ? (
+      <OrganizeTool client:visible locale={locale as string} dict={dict} />
+    ) : (
+      <Dropzone
+        client:visible
+        accept={tool.accept}
+        selectLabel={dict.workspace.selectFiles}
+        dropHint={dict.workspace.orDropHere}
+        maxFiles={tool.maxFiles}
+      />
+    )}
+  </section>
+</BaseLayout>

@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/pdf-tools/fonts/inter-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/pdf-tools/fonts/inter-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/pdf-tools/fonts/inter-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/pdf-tools/fonts/inter-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f5f5fa;
+  --surface: #ffffff;
+  --border: #ebebf4;
+  --text: #161616;
+  --text-2: #707078;
+  --text-3: #adadb6;
+  --primary: #4d90fe;
+  --primary-hover: #3b7de9;
+  --primary-active: #2f6bd8;
+  --success: #4acd86;
+  --warning: #ffb400;
+  --danger: #e5322d;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #121212;
+  --bg-soft: #1e1e1e;
+  --surface: #1e1e1e;
+  --border: #2e2e2e;
+  --text: #e8eaed;
+  --text-2: #9aa0a6;
+  --text-3: #5f6368;
+  --primary: #8ab4f8;
+  --primary-hover: #a8c7fa;
+  --primary-active: #c2d7fd;
+  --success: #4acd86;
+  --warning: #ffb400;
+  --danger: #ff6b62;
+  color-scheme: dark;
+}
+
+html {
+  font-family: 'Inter', system-ui, 'Noto Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible focus ring for keyboard users (a11y) */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

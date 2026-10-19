@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Dropzone from '../tools/Dropzone';
+import MergeTool from '../tools/MergeTool';
+import SplitTool from '../tools/SplitTool';
+import CompressTool from '../tools/CompressTool';
+import OrganizeTool from '../tools/OrganizeTool';
+import RotateTool from '../tools/RotateTool';
+import PageNumbersTool from '../tools/PageNumbersTool';
+import WatermarkTool from '../tools/WatermarkTool';
+import JpgToPdfTool from '../tools/JpgToPdfTool';
+import PdfToJpgTool from '../tools/PdfToJpgTool';
+import UnlockTool from '../tools/UnlockTool';
+import ProtectTool from '../tools/ProtectTool';
+import { tools, toolBySlug } from '../tools';
+import { getDict, dicts } from '../i18n/dicts';
+import { locales } from '../../astro.config.mjs';
+import { toolJsonLd } from '../lib/seo';
+import { fmt } from '../i18n';
+
+export function getStaticPaths() {
+  return tools.map((t) => ({ params: { tool: t.slug } }));
+}
+
+const { tool: slug } = Astro.params;
+const tool = toolBySlug[slug as string];
+const locale = 'en';
+const dict = getDict(locale);
+const meta = dict.tools[tool.key as keyof typeof dict.tools];
+const canonicalPath = `/${tool.slug}/`;
+const url = `https://dusmamud.github.io/pdf-tools${canonicalPath}`;
+const title = fmt(dict.meta.toolTitle, { tool: meta.name });
+---
+
+<BaseLayout
+  locale={locale}
+  dict={dict}
+  title={title}
+  description={meta.desc}
+  canonicalPath={canonicalPath}
+  jsonLd={toolJsonLd(locale, tool, meta.name, meta.desc, url)}
+  ogTool={tool.key}
+>
+  <section class="max-w-3xl mx-auto px-4 pt-12 pb-8 text-center">
+    <h1 class="text-4xl md:text-[40px] font-bold tracking-tight">{meta.h1}</h1>
+    <p class="mt-3 text-lg" style="color: var(--text-2);">{meta.sub}</p>
+  </section>
+  <section class="max-w-3xl mx-auto px-4 pb-16">
+    {tool.key === 'merge' ? (
+      <MergeTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'split' ? (
+      <SplitTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'compress' ? (
+      <CompressTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'organize' ? (
+      <OrganizeTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'rotate' ? (
+      <RotateTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'pageNumbers' ? (
+      <PageNumbersTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'watermark' ? (
+      <WatermarkTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'jpgToPdf' ? (
+      <JpgToPdfTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'pdfToJpg' ? (
+      <PdfToJpgTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'unlock' ? (
+      <UnlockTool client:visible locale={locale} dict={dict} />
+    ) : tool.key === 'protect' ? (
+      <ProtectTool client:visible locale={locale} dict={dict} />
+    ) : (
+      <Dropzone
+        client:visible
+        accept={tool.accept}
+        selectLabel={dict.workspace.selectFiles}
+        dropHint={dict.workspace.orDropHere}
+        maxFiles={tool.maxFiles}
+      />
+    )}
+  </section>
+</BaseLayout>
